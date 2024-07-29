@@ -3,7 +3,7 @@ use chumsky::prelude::*;
 fn main() {
     let src = std::fs::read_to_string(std::env::args().nth(1).unwrap()).unwrap();
 
-    println!("{}", src);
+    println!("{:?}", parser().parse(src))
 }
 
 #[derive(Debug)]
@@ -31,4 +31,6 @@ enum Expr {
     },
 }
 
-fn parser() -> impl Parser<char, Expr, Error = Simple<char>> {}
+fn parser() -> impl Parser<char, Expr, Error = Simple<char>> {
+    filter(|c: &char| c.is_ascii_digit()).map(|c| Expr::Num(c.to_digit(10).unwrap() as f64))
+}

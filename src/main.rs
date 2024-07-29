@@ -1,3 +1,5 @@
+use std::f64;
+
 use chumsky::prelude::*;
 
 fn main() {
@@ -31,6 +33,17 @@ enum Expr {
     },
 }
 
+fn eval(expr: &Expr) -> Result<f64, String> {
+    match expr {
+        Expr::Num(x) => Ok(*x),
+        Expr::Neg(a) => Ok(-eval(a)?),
+        Expr::Add(a, b) => Ok(eval(a)? + eval(b)?),
+        Expr::Sub(a, b) => Ok(eval(a)? - eval(b)?),
+        Expr::Mul(a, b) => Ok(eval(a)? * eval(b)?),
+        Expr::Div(a, b) => Ok(eval(a)? / eval(b)?),
+        _ => todo!(),
+    }
+}
 fn parser() -> impl Parser<char, Expr, Error = Simple<char>> {
     let int = text::int(10)
         .map(|s: String| Expr::Num(s.parse().unwrap()))

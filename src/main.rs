@@ -57,5 +57,14 @@ fn parser() -> impl Parser<char, Expr, Error = Simple<char>> {
         .map(|s: String| Expr::Num(s.parse().unwrap()))
         .padded();
 
-    int.then_ignore(end())
+    let atom = int;
+
+    let op = |c| just(c).padded();
+
+    let unary = op('-')
+        .repeated()
+        .then(atom)
+        .foldr(|_op, rhs| Expr::Neg(Box::new(rhs)));
+
+    unary.then_ignore(end())
 }
